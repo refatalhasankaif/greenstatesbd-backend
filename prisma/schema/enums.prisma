@@ -11,6 +11,17 @@ enum PropertyType {
   COMMERCIAL
 }
 
+enum Division {
+  DHAKA
+  CHITTAGONG
+  KHULNA
+  RAJSHAHI
+  SYLHET
+  BARISAL
+  RANGPUR
+  MYMENSINGH
+}
+
 enum PropertyStatus {
   DRAFT
   UPCOMING

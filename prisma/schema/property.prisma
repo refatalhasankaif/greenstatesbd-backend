@@ -6,7 +6,7 @@ model Property {
     basePrice  Float
     currentBid Float?
 
-    location String
+    location Division
     address  String?
 
     type   PropertyType

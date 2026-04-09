@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { PropertyRoutes } from "../modules/property/property.route";
+import { propertyRoutes } from "../modules/property/property.route";
+
 
 const router = Router();
 
@@ -7,6 +8,6 @@ router.get("/test", (req, res) => {
   res.json({ message: "API route working" });
 });
 
-router.use("/properties", PropertyRoutes)
+router.use("/properties", propertyRoutes)
 
 export const IndexRoutes = router;

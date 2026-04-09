@@ -1,18 +1,40 @@
 import { Router } from "express";
-import { createPropertyController } from "./property.controller";
-import { authMiddleware } from "../../middlewares/auth.middleware";
-import { upload } from "../../config/multer.config";
+import { propertyController } from "./property.controller";
+import { checkAuth } from "../../middlewares/checkAuth";
 import { validateRequest } from "../../middlewares/validateRequest";
-import { createPropertySchema } from "./property.validation";
+import { propertyValidation } from "./property.validation";
 
 const router = Router();
 
 router.post(
   "/",
-  authMiddleware,
-  upload.array("images", 5),
-  validateRequest(createPropertySchema),
-  createPropertyController
+  checkAuth("USER"),
+  validateRequest(propertyValidation.createPropertyValidationSchema),
+  propertyController.createProperty
 );
 
-export const PropertyRoutes = router;
+router.get("/", propertyController.getAllProperties);
+
+router.get("/:id", propertyController.getPropertyById);
+
+router.patch(
+  "/:id",
+  checkAuth("USER"),
+  validateRequest(propertyValidation.updatePropertyValidationSchema),
+  propertyController.updateProperty
+);
+
+router.patch(
+  "/:id/status",
+  checkAuth("ADMIN", "MANAGER"),
+  validateRequest(propertyValidation.updateStatusValidationSchema),
+  propertyController.updatePropertyStatus
+);
+
+router.delete(
+  "/:id",
+  checkAuth("USER", "ADMIN"),
+  propertyController.deleteProperty
+);
+
+export const propertyRoutes = router;
