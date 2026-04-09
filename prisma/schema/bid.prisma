@@ -1,0 +1,19 @@
+model Bid {
+    id String @id @default(uuid())
+
+    amount Float
+    status BidStatus @default(ACTIVE)
+
+    createdAt DateTime @default(now())
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    propertyId String
+    property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([propertyId])
+    @@index([amount])
+    @@index([createdAt])
+}

@@ -1,0 +1,34 @@
+model Property {
+    id          String @id @default(uuid())
+    title       String
+    description String
+
+    basePrice  Float
+    currentBid Float?
+
+    location String
+    address  String?
+
+    type   PropertyType
+    status PropertyStatus @default(DRAFT)
+
+    biddingStart DateTime?
+    biddingEnd   DateTime?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    ownerId String
+    owner   User   @relation("UserProperties", fields: [ownerId], references: [id], onDelete: Cascade)
+
+    images   PropertyImage[]
+    bids     Bid[]
+    managers PropertyAssignment[]
+    reports  Report[]
+
+    @@index([location])
+    @@index([type])
+    @@index([status])
+    @@index([basePrice])
+    @@index([biddingEnd])
+}

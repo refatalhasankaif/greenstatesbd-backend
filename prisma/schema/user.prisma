@@ -1,0 +1,22 @@
+model User {
+    id          String @id @default(uuid())
+    name        String
+    email       String @unique
+    firebaseUid String @unique
+    role        Role   @default(USER)
+
+    profileImage String?
+
+    isBlocked Boolean @default(false)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    properties        Property[]           @relation("UserProperties")
+    bids              Bid[]
+    managedProperties PropertyAssignment[]
+    reports           Report[]
+
+    @@index([email])
+    @@index([role])
+}

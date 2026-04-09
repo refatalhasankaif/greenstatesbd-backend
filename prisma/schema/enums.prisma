@@ -1,0 +1,44 @@
+enum Role {
+  USER
+  MANAGER
+  ADMIN
+}
+
+enum PropertyType {
+  APARTMENT
+  LAND
+  HOUSE
+  COMMERCIAL
+}
+
+enum PropertyStatus {
+  DRAFT
+  UPCOMING
+  ONGOING
+  CLOSED
+  ADVANCE_PAID
+  FULLY_PAID
+  HANDED_OVER
+}
+
+enum BidStatus {
+  ACTIVE
+  WON
+  LOST
+  CANCELLED
+}
+
+enum ReportType {
+  FAKE_PROPERTY
+  SCAM
+  WRONG_INFO
+  DUPLICATE
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  REJECTED
+}

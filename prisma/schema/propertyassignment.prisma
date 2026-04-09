@@ -1,0 +1,15 @@
+model PropertyAssignment {
+    id String @id @default(uuid())
+
+    managerId  String
+    propertyId String
+
+    assignedAt DateTime @default(now())
+
+    manager  User     @relation(fields: [managerId], references: [id], onDelete: Cascade)
+    property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+    @@unique([managerId, propertyId])
+    @@index([managerId])
+    @@index([propertyId])
+}

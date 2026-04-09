@@ -1,0 +1,11 @@
+model PropertyImage {
+    id  String @id @default(uuid())
+    url String
+
+    propertyId String
+    property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+
+    @@index([propertyId])
+}
