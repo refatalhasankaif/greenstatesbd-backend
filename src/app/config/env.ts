@@ -14,6 +14,7 @@ interface EnvConfig {
     FIREBASE_PROJECT_ID: string;
     FIREBASE_CLIENT_EMAIL: string;
     FIREBASE_PRIVATE_KEY: string;
+    FIREBASE_WEB_API_KEY: string;
 
     CLOUDINARY_CLOUD_NAME: string;
     CLOUDINARY_API_KEY: string;
@@ -35,6 +36,7 @@ const loadEnvVariables = (): EnvConfig => {
         "FIREBASE_PROJECT_ID",
         "FIREBASE_CLIENT_EMAIL",
         "FIREBASE_PRIVATE_KEY",
+        "FIREBASE_WEB_API_KEY",
         "CLOUDINARY_CLOUD_NAME",
         "CLOUDINARY_API_KEY",
         "CLOUDINARY_API_SECRET",
@@ -67,6 +69,7 @@ const loadEnvVariables = (): EnvConfig => {
             /\\n/g,
             "\n"
         ),
+        FIREBASE_WEB_API_KEY: process.env.FIREBASE_WEB_API_KEY as string,
         CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
         CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
         CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
