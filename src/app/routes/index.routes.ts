@@ -12,7 +12,6 @@ import { galleryRoutes } from "../modules/gellery/gallery.routes";
 import { aiRoutes } from "../modules/ai/ai.route";
 import { dashboardRoutes } from "../modules/dashboard/dashboard.route";
 
-
 const router = Router();
 
 router.get("/test", (_req, res) => {

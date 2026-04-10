@@ -2,120 +2,110 @@ import { prisma } from "../../lib/prisma";
 import AppError from "../../errors/AppError";
 import status from "http-status";
 import {
-  ReportStatus,
-  Role,
+    ReportStatus,
+    Role,
 } from "../../../generated/prisma/enums";
+import { getPagination } from "../../utils/pagination";
 
 type CreateReportPayload = {
-  type: any;
-  message?: string;
-  propertyId?: string;
-  blogId?: string;
-  galleryId?: string;
+    type: any;
+    message?: string;
+    propertyId?: string;
+    blogId?: string;
+    galleryId?: string;
 };
 
 const createReport = async (user: any, payload: CreateReportPayload) => {
-  const { propertyId, blogId, galleryId, type, message } = payload;
+    const { propertyId, blogId, galleryId, type, message } = payload;
 
-  if (!propertyId && !blogId && !galleryId) {
-    throw new AppError(status.BAD_REQUEST, "No target provided");
-  }
+    if (!propertyId && !blogId && !galleryId) {
+        throw new AppError(status.BAD_REQUEST, "No target provided");
+    }
 
-  return prisma.report.create({
-    data: {
-      type,
-      message,
-      userId: user.id,
-      propertyId: propertyId || null,
-      blogId: blogId || null,
-      galleryId: galleryId || null,
-    },
-  });
+    return prisma.report.create({
+        data: {
+            type,
+            message,
+            userId: user.id,
+            propertyId: propertyId || null,
+            blogId: blogId || null,
+            galleryId: galleryId || null,
+        },
+    });
 };
 
-const getAllReports = async (user: any) => {
-  if (user.role === Role.ADMIN) {
-    return prisma.report.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { user: true },
-    });
-  }
+const getAllReports = async (query: any) => {
+    const { skip, limit, page } = getPagination(query);
 
-  if (user.role === Role.MANAGER) {
-    return prisma.report.findMany({
-      where: { propertyId: { not: null } },
-      orderBy: { createdAt: "desc" },
-    });
-  }
+    const [data, total] = await Promise.all([
+        prisma.report.findMany({
+            skip,
+            take: limit,
+            include: { user: true },
+            orderBy: { createdAt: "desc" },
+        }),
+        prisma.report.count(),
+    ]);
 
-  if (user.role === Role.MODERATOR) {
-    return prisma.report.findMany({
-      where: {
-        OR: [
-          { blogId: { not: null } },
-          { galleryId: { not: null } },
-        ],
-      },
-      orderBy: { createdAt: "desc" },
-    });
-  }
-
-  throw new AppError(status.FORBIDDEN, "Not allowed");
+    return {
+        meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
+        data,
+    };
 };
 
 const getMyReports = async (user: any) => {
-  return prisma.report.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-  });
+    return prisma.report.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+    });
 };
 
 const updateReportStatus = async (
-  id: string,
-  statusValue: ReportStatus,
-  user: any
+    id: string,
+    statusValue: ReportStatus,
+    user: any
 ) => {
-  const report = await prisma.report.findUnique({
-    where: { id },
-  });
-
-  if (!report) {
-    throw new AppError(status.NOT_FOUND, "Report not found");
-  }
-
-  if (user.role === Role.ADMIN) {
-    return prisma.report.update({
-      where: { id },
-      data: { status: statusValue },
+    const report = await prisma.report.findUnique({
+        where: { id },
     });
-  }
 
-  if (user.role === Role.MANAGER) {
-    if (report.propertyId) {
-      return prisma.report.update({
-        where: { id },
-        data: { status: statusValue },
-      });
+    if (!report) {
+        throw new AppError(status.NOT_FOUND, "Report not found");
     }
-    throw new AppError(status.FORBIDDEN, "Not allowed");
-  }
 
-  if (user.role === Role.MODERATOR) {
-    if (report.blogId || report.galleryId) {
-      return prisma.report.update({
-        where: { id },
-        data: { status: statusValue },
-      });
+    if (user.role === Role.ADMIN) {
+        return prisma.report.update({
+            where: { id },
+            data: { status: statusValue },
+        });
     }
-    throw new AppError(status.FORBIDDEN, "Not allowed");
-  }
 
-  throw new AppError(status.FORBIDDEN, "Permission denied");
+    if (user.role === Role.MANAGER) {
+        if (report.propertyId) {
+            return prisma.report.update({
+                where: { id },
+                data: { status: statusValue },
+            });
+        }
+        throw new AppError(status.FORBIDDEN, "Not allowed");
+    }
+
+    if (user.role === Role.MODERATOR) {
+        if (report.blogId || report.galleryId) {
+            return prisma.report.update({
+                where: { id },
+                data: { status: statusValue },
+            });
+        }
+        throw new AppError(status.FORBIDDEN, "Not allowed");
+    }
+
+    throw new AppError(status.FORBIDDEN, "Permission denied");
 };
 
 export const reportService = {
-  createReport,
-  getAllReports,
-  getMyReports,
-  updateReportStatus,
+    createReport,
+    getAllReports,
+    getMyReports,
+    updateReportStatus,
 };

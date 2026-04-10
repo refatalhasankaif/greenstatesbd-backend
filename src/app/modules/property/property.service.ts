@@ -18,7 +18,11 @@ const createProperty = async (payload: any, user: any) => {
 };
 
 const getAllProperties = async (query: any) => {
-    const { search, location, type, status } = query;
+    const { search, location, type, status, page = 1, limit = 10 } = query;
+
+    const pageNumber = Number(page) || 1;
+    const limitNumber = Number(limit) || 10;
+    const skip = (pageNumber - 1) * limitNumber;
 
     const where: any = {};
 
@@ -33,11 +37,26 @@ const getAllProperties = async (query: any) => {
     if (type) where.type = type;
     if (status) where.status = status;
 
-    return prisma.property.findMany({
-        where,
-        include: { images: true },
-        orderBy: { createdAt: "desc" },
-    });
+    const [data, total] = await Promise.all([
+        prisma.property.findMany({
+            where,
+            include: { images: true },
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limitNumber,
+        }),
+        prisma.property.count({ where }),
+    ]);
+
+    return {
+        data,
+        meta: {
+            page: pageNumber,
+            limit: limitNumber,
+            total,
+            totalPage: Math.ceil(total / limitNumber),
+        },
+    };
 };
 
 const getPropertyById = async (id: string) => {

@@ -22,14 +22,15 @@ const createGallery = catchAsync(async (req: Request, res: Response) => {
     );
 });
 
-const getAllGallery = catchAsync(async (_req: Request, res: Response) => {
-    const result = await galleryService.getAllGallery();
+const getAllGallery = catchAsync(async (req: Request, res: Response) => {
+  const result = await galleryService.getAllGallery(req.query);
 
-    sendResponse(res, {
-        success: true,
-        message: "Gallery retrieved successfully",
-        data: result,
-    });
+  sendResponse(res, {
+    success: true,
+    message: "Gallery retrieved",
+    data: result.data,
+    meta: result.meta,
+  });
 });
 
 const getMyGallery = catchAsync(async (req: Request, res: Response) => {

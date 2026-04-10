@@ -2,6 +2,7 @@ import { prisma } from "../../lib/prisma";
 import AppError from "../../errors/AppError";
 import status from "http-status";
 import { BidStatus } from "../../../generated/prisma/enums";
+import { getPagination } from "../../utils/pagination";
 
 const createBid = async (payload: any, user: any) => {
     const property = await prisma.property.findUnique({
@@ -53,24 +54,58 @@ const createBid = async (payload: any, user: any) => {
     return bid;
 };
 
-const getMyBids = async (user: any) => {
-    return prisma.bid.findMany({
-        where: { userId: user.id },
-        include: {
-            property: true,
-        },
-        orderBy: { createdAt: "desc" },
-    });
+const getMyBids = async (user: any, query: any) => {
+  const { skip, limit, page } = getPagination(query);
+
+  const where = { userId: user.id };
+
+  const [data, total] = await Promise.all([
+    prisma.bid.findMany({
+      where,
+      include: { property: true },
+      skip,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.bid.count({ where }),
+  ]);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPage: Math.ceil(total / limit),
+    },
+    data,
+  };
 };
 
-const getBidsByProperty = async (propertyId: string) => {
-    return prisma.bid.findMany({
-        where: { propertyId },
-        include: {
-            user: true,
-        },
-        orderBy: { amount: "desc" },
-    });
+const getBidsByProperty = async (propertyId: string, query: any) => {
+  const { skip, limit, page } = getPagination(query);
+
+  const where = { propertyId };
+
+  const [data, total] = await Promise.all([
+    prisma.bid.findMany({
+      where,
+      include: { user: true },
+      skip,
+      take: limit,
+      orderBy: { amount: "desc" },
+    }),
+    prisma.bid.count({ where }),
+  ]);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPage: Math.ceil(total / limit),
+    },
+    data,
+  };
 };
 
 const closeBidding = async (propertyId: string) => {
