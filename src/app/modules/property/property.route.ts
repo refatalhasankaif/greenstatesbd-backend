@@ -15,12 +15,11 @@ router.post(
 );
 
 router.get("/", propertyController.getAllProperties);
-
 router.get("/:id", propertyController.getPropertyById);
 
 router.patch(
   "/:id",
-  checkAuth(Role.USER),
+  checkAuth(Role.USER, Role.ADMIN),
   validateRequest(propertyValidation.updatePropertyValidationSchema),
   propertyController.updateProperty
 );

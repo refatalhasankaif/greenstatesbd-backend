@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import status from "http-status";
 import { propertyService } from "./property.service";
+import { PropertyStatus } from "../../../generated/prisma/enums";
 
 const createProperty = catchAsync(async (req: Request, res: Response) => {
   const result = await propertyService.createProperty(req.body, req.user);
@@ -57,15 +58,19 @@ const updatePropertyStatus = catchAsync(async (req: Request, res: Response) => {
 
   const result = await propertyService.updatePropertyStatus(
     id,
-    req.body.status,
+    req.body.status as PropertyStatus,
     req.user
   );
 
-  sendResponse(res, {
-    success: true,
-    message: "Property status updated successfully",
-    data: result,
-  });
+  sendResponse(
+    res,
+    {
+      success: true,
+      message: "Property status updated successfully",
+      data: result,
+    },
+    status.OK
+  );
 });
 
 const deleteProperty = catchAsync(async (req: Request, res: Response) => {

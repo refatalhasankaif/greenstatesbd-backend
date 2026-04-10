@@ -1,8 +1,10 @@
+import { Division, PropertyType } from "../../../generated/prisma/enums";
+
 export interface IUpdatePropertyPayload {
   title?: string;
   description?: string;
   basePrice?: number;
-  location?: string;
+  location?: Division;
   address?: string;
-  type?: string;
+  type?: PropertyType;
 }
