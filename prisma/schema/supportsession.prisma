@@ -6,12 +6,14 @@ model SupportSession {
     startedAt DateTime?
     endedAt   DateTime?
 
-    userId String
-    user   User @relation("UserSupport", fields: [userId], references: [id])
+    createdAt DateTime  @default(now())
+    
+    userId    String
+    user      User      @relation("UserSupport", fields: [userId], references: [id])
 
     agentId String?
-    agent   User? @relation(fields: [agentId], references: [id])
+    agent   User?   @relation(fields: [agentId], references: [id])
+    users   User[]  @relation("AgentSupport")
 
     @@index([status])
-    users User[] @relation("AgentSupport")
 }
