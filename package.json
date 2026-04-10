@@ -5,7 +5,7 @@
     "main": "dist/src/server.js",
     "scripts": {
         "postinstall": "prisma generate",
-        "start": "node dist/src/server.js",
+        "start": "tsx src/server.ts",
         "build": "tsc",
         "dev": "tsx watch src/server.ts",
         "lint": "eslint .",
