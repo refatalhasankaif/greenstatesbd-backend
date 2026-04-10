@@ -1,0 +1,17 @@
+model SupportSession {
+    id String @id @default(uuid())
+
+    status SupportStatus @default(REQUESTED)
+
+    startedAt DateTime?
+    endedAt   DateTime?
+
+    userId String
+    user   User @relation("UserSupport", fields: [userId], references: [id])
+
+    agentId String?
+    agent   User? @relation(fields: [agentId], references: [id])
+
+    @@index([status])
+    users User[] @relation("AgentSupport")
+}

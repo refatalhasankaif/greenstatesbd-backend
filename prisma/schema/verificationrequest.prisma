@@ -1,0 +1,13 @@
+model VerificationRequest {
+    id String @id @default(uuid())
+
+    documentUrl String
+    note        String?
+
+    status VerificationStatus @default(PENDING)
+
+    createdAt DateTime @default(now())
+
+    userId String @unique
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

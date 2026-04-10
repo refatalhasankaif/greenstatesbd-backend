@@ -2,6 +2,8 @@ enum Role {
   USER
   MANAGER
   ADMIN
+  MODERATOR
+  SUPPORT_AGENT
 }
 
 enum PropertyType {
@@ -51,5 +53,19 @@ enum ReportStatus {
   PENDING
   REVIEWED
   RESOLVED
+  REJECTED
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SupportStatus {
+  REQUESTED
+  ACCEPTED
+  ONGOING
+  ENDED
   REJECTED
 }

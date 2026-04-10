@@ -3,9 +3,10 @@ import { firebaseAdmin } from "../lib/firebase";
 import AppError from "../errors/AppError";
 import status from "http-status";
 import { prisma } from "../lib/prisma";
+import { Role } from "../../generated/prisma/enums";
 
 export const checkAuth =
-  (...roles: string[]) =>
+  (...roles: Role[]) =>
   async (req: Request, _res: Response, next: NextFunction) => {
     try {
       const token = req.headers.authorization?.split(" ")[1];
@@ -28,12 +29,11 @@ export const checkAuth =
         throw new AppError(status.FORBIDDEN, "User is blocked");
       }
 
-      // ROLE CHECK
       if (roles.length && !roles.includes(user.role)) {
         throw new AppError(status.FORBIDDEN, "Forbidden");
       }
 
-      (req as any).user = user;
+      req.user = user;
 
       next();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars

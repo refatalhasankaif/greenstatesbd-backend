@@ -12,10 +12,15 @@ model Report {
     userId String
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    propertyId String
-    property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+    propertyId String?
+    property   Property? @relation(fields: [propertyId], references: [id])
+
+    blogId String?
+    blog   Blog? @relation(fields: [blogId], references: [id])
+
+    galleryId String?
+    gallery Gallery? @relation(fields: [galleryId], references: [id])
 
     @@index([userId])
-    @@index([propertyId])
     @@index([status])
 }

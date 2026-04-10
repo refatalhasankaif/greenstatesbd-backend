@@ -1,0 +1,19 @@
+model Gallery {
+    id String @id @default(uuid())
+
+    imageUrl String
+    title    String
+
+    likesCount Int @default(0)
+
+    isBlocked Boolean @default(false)
+
+    createdAt DateTime @default(now())
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([likesCount])
+    reports Report[]
+}
