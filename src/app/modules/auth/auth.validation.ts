@@ -24,8 +24,8 @@ const loginValidation = z.object({
 
 const socialAuthValidation = z.object({
   body: z.object({
-    email: z.string().email(),
-    name: z.string(),
+    idToken: z.string(),
+    name: z.string().optional(),
     profileImage: z.string().url().optional(),
   }),
 });

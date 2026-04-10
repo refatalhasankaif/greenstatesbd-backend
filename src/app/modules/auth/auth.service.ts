@@ -6,6 +6,18 @@ import { IRegisterUser, ILoginUser, ISocialAuth } from "./auth.interface";
 import { env } from "../../config/env";
 import { Role } from "../../../generated/prisma/enums";
 
+const userSelect = {
+  id: true,
+  name: true,
+  email: true,
+  role: true,
+  profileImage: true,
+  isBlocked: true,
+  isVerified: true,
+  verificationStatus: true,
+  createdAt: true,
+};
+
 const checkEmail = async (email: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
 
@@ -41,7 +53,11 @@ const registerUser = async (payload: IRegisterUser) => {
         name: payload.name,
         profileImage: payload.profileImage,
         role: Role.USER,
+
+        isVerified: false,
+        verificationStatus: "PENDING",
       },
+      select: userSelect,
     });
 
     return user;
@@ -73,6 +89,7 @@ const loginUser = async (payload: ILoginUser) => {
 
   const user = await prisma.user.findUnique({
     where: { email: payload.email },
+    select: userSelect,
   });
 
   if (!user) {
@@ -92,6 +109,7 @@ const loginUser = async (payload: ILoginUser) => {
 const socialAuth = async (payload: ISocialAuth) => {
   const existing = await prisma.user.findUnique({
     where: { firebaseUid: payload.firebaseUid },
+    select: userSelect,
   });
 
   if (existing) return existing;
@@ -103,7 +121,10 @@ const socialAuth = async (payload: ISocialAuth) => {
       name: payload.name,
       profileImage: payload.profileImage,
       role: Role.USER,
+      isVerified: false,
+      verificationStatus: "PENDING",
     },
+    select: userSelect,
   });
 
   return user;

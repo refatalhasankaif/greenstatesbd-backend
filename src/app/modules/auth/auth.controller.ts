@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import status from "http-status";
 import { authService } from "./auth.service";
+import { firebaseAdmin } from "../../lib/firebase";
 
 const checkEmail = catchAsync(async (req: Request, res: Response) => {
   await authService.checkEmail(req.body.email);
@@ -47,11 +48,14 @@ const login = catchAsync(async (req: Request, res: Response) => {
 });
 
 const social = catchAsync(async (req: Request, res: Response) => {
+  const { idToken, name, profileImage } = req.body;
+  const decoded = await firebaseAdmin.auth().verifyIdToken(idToken);
+
   const result = await authService.socialAuth({
-    firebaseUid: req.user!.firebaseUid,
-    email: req.body.email,
-    name: req.body.name,
-    profileImage: req.body.profileImage,
+    firebaseUid: decoded.uid,
+    email: decoded.email!,
+    name: name || decoded.name || "User",
+    profileImage: profileImage || decoded.picture,
   });
 
   sendResponse(
