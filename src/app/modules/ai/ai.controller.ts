@@ -1,28 +1,52 @@
 import { Request, Response } from "express";
-import status from "http-status";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { generateAIResponse } from "./ai.service";
+import status from "http-status";
+import { aiService } from "./ai.service";
 
-const chatWithAI = catchAsync(async (req: Request, res: Response) => {
-  const { message } = req.body;
-
-  if (!message) {
-    return sendResponse(res, {
-      success: false,
-      message: "Message is required",
-    }, status.BAD_REQUEST);
-  }
-
-  const result = await generateAIResponse(message);
+const chat = catchAsync(async (req: Request, res: Response) => {
+  const result = await aiService.chatAssistant(req.body.message);
 
   sendResponse(res, {
     success: true,
-    message: "AI response generated successfully",
+    message: "AI response",
     data: result,
-  });
+  }, status.OK);
+});
+
+const generateBlog = catchAsync(async (req: Request, res: Response) => {
+  const result = await aiService.generateBlog(req.body.topic);
+
+  sendResponse(res, {
+    success: true,
+    message: "Blog generated",
+    data: result,
+  }, status.OK);
+});
+
+const blogIdeas = catchAsync(async (_req: Request, res: Response) => {
+  const result = await aiService.suggestBlogIdeas();
+
+  sendResponse(res, {
+    success: true,
+    message: "Ideas generated",
+    data: result,
+  }, status.OK);
+});
+
+const voice = catchAsync(async (req: Request, res: Response) => {
+  const result = await aiService.voiceAssistant(req.body.message);
+
+  sendResponse(res, {
+    success: true,
+    message: "Voice response",
+    data: result,
+  }, status.OK);
 });
 
 export const aiController = {
-  chatWithAI,
+  chat,
+  generateBlog,
+  blogIdeas,
+  voice,
 };

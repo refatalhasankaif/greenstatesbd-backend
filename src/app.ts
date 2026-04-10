@@ -2,7 +2,6 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-
 import { globalErrorHandler } from "./app/errors/globalErrorHandler";
 import { notFound } from "./app/errors/notFound";
 import { env } from "./app/config/env";
