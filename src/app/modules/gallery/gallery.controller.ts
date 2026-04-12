@@ -10,73 +10,40 @@ const createGallery = catchAsync(async (req: Request, res: Response) => {
         req.body,
         req.user
     );
-
-    sendResponse(
-        res,
-        {
-            success: true,
-            message: "Gallery created successfully",
-            data: result,
-        },
-        status.CREATED
-    );
+    sendResponse(res, { success: true, message: "Gallery created successfully", data: result }, status.CREATED);
 });
 
 const getAllGallery = catchAsync(async (req: Request, res: Response) => {
     const result = await galleryService.getAllGallery(req.query);
-
-    sendResponse(res, {
-        success: true,
-        message: "Gallery retrieved",
-        data: result.data,
-        meta: result.meta,
-    });
+    sendResponse(res, { success: true, message: "Gallery retrieved", data: result.data, meta: result.meta });
 });
 
 const getMyGallery = catchAsync(async (req: Request, res: Response) => {
     const result = await galleryService.getMyGallery(req.user);
-
-    sendResponse(res, {
-        success: true,
-        message: "My gallery retrieved",
-        data: result,
-    });
+    sendResponse(res, { success: true, message: "My gallery retrieved", data: result });
 });
 
 const deleteGallery = catchAsync(async (req: Request, res: Response) => {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-
-    const result = await galleryService.deleteGallery(id, req.user!); // ← Fixed: used ! or check
-
-    sendResponse(res, {
-        success: true,
-        message: "Gallery deleted successfully",
-        data: result,
-    });
+    const result = await galleryService.deleteGallery(id, req.user!);
+    sendResponse(res, { success: true, message: "Gallery deleted successfully", data: result });
 });
 
 const toggleBlockGallery = catchAsync(async (req: Request, res: Response) => {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-
     const result = await galleryService.toggleBlockGallery(id, req.user!);
-
-    sendResponse(res, {
-        success: true,
-        message: "Gallery status updated",
-        data: result,
-    });
+    sendResponse(res, { success: true, message: "Gallery status updated", data: result });
 });
 
 const likeGallery = catchAsync(async (req: Request, res: Response) => {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-
     const result = await galleryService.likeGallery(id, req.user!);
+    sendResponse(res, { success: true, message: "Like updated successfully", data: result });
+});
 
-    sendResponse(res, {
-        success: true,
-        message: "Like updated successfully",
-        data: result,
-    });
+const getLikedIds = catchAsync(async (req: Request, res: Response) => {
+    const result = await galleryService.getLikedIds(req.user!);
+    sendResponse(res, { success: true, message: "Liked gallery ids", data: result });
 });
 
 export const galleryController = {
@@ -86,4 +53,5 @@ export const galleryController = {
     deleteGallery,
     toggleBlockGallery,
     likeGallery,
+    getLikedIds,
 };

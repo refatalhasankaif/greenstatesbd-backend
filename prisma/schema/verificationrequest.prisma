@@ -4,10 +4,10 @@ model VerificationRequest {
     documentUrl String
     note        String?
 
-    status VerificationStatus @default(PENDING)
+    status VerificationStatus @default(NOT_VERIFIED)
 
     createdAt DateTime @default(now())
 
     userId String @unique
-    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
