@@ -6,72 +6,43 @@ import { authService } from "./auth.service";
 import { firebaseAdmin } from "../../lib/firebase";
 
 const checkEmail = catchAsync(async (req: Request, res: Response) => {
-  await authService.checkEmail(req.body.email);
-
-  sendResponse(
-    res,
-    {
-      success: true,
-      message: "Email exists",
-      data: null,
-    },
-    status.OK
-  );
+    await authService.checkEmail(req.body.email);
+    sendResponse(res, { success: true, message: "Email exists", data: null }, status.OK);
 });
 
 const register = catchAsync(async (req: Request, res: Response) => {
-  const result = await authService.registerUser(req.body);
-
-  sendResponse(
-    res,
-    {
-      success: true,
-      message: "User registered successfully",
-      data: result,
-    },
-    status.CREATED
-  );
+    const result = await authService.registerUser(req.body);
+    sendResponse(res, { success: true, message: "User registered successfully", data: result }, status.CREATED);
 });
 
 const login = catchAsync(async (req: Request, res: Response) => {
-  const result = await authService.loginUser(req.body);
-
-  sendResponse(
-    res,
-    {
-      success: true,
-      message: "Login successful",
-      data: result,
-    },
-    status.OK
-  );
+    const result = await authService.loginUser(req.body);
+    sendResponse(res, { success: true, message: "Login successful", data: result }, status.OK);
 });
 
 const social = catchAsync(async (req: Request, res: Response) => {
-  const { idToken, name, profileImage } = req.body;
-  const decoded = await firebaseAdmin.auth().verifyIdToken(idToken);
+    const { idToken, name, profileImage } = req.body;
 
-  const result = await authService.socialAuth({
-    firebaseUid: decoded.uid,
-    email: decoded.email!,
-    name: name || decoded.name || "User",
-    profileImage: profileImage || decoded.picture,
-  });
+    const decoded = await firebaseAdmin.auth().verifyIdToken(idToken);
 
-  sendResponse(
-    res,
-    {
-      success: true,
-      message: "Social login successful",
-      data: result,
-    },
-    status.OK
-  );
+    const result = await authService.socialAuth({
+        firebaseUid: decoded.uid,
+        email: decoded.email!,
+        name: name || decoded.name || "User",
+        profileImage: profileImage || decoded.picture,
+        idToken,
+    });
+
+    sendResponse(
+        res,
+        { success: true, message: "Social login successful", data: result },
+        status.OK
+    );
 });
 
 export const authController = {
-  checkEmail,
-  register,
-  login,
-  social,
+    checkEmail,
+    register,
+    login,
+    social,
 };

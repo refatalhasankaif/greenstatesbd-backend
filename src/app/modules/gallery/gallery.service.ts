@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { prisma } from "../../lib/prisma";
 import AppError from "../../errors/AppError";
 import status from "http-status";
@@ -21,6 +23,11 @@ const createGallery = async (file: any, payload: any, user: any) => {
             publicId: upload.public_id,
             userId: user.id,
         },
+        include: { 
+            user: { 
+                select: { name: true, profileImage: true } 
+            } 
+        },
     });
 };
 
@@ -32,7 +39,11 @@ const getAllGallery = async (query: any) => {
     const [data, total] = await Promise.all([
         prisma.gallery.findMany({
             where,
-            include: { user: true },
+            include: { 
+                user: { 
+                    select: { name: true, profileImage: true } 
+                } 
+            },
             skip,
             take: limit,
             orderBy: { createdAt: "desc" },
@@ -49,14 +60,13 @@ const getAllGallery = async (query: any) => {
 const getMyGallery = async (user: any) => {
     return prisma.gallery.findMany({
         where: { userId: user.id },
+        include: { user: true },
         orderBy: { createdAt: "desc" },
     });
 };
 
 const deleteGallery = async (id: string, user: any) => {
-    const gallery = await prisma.gallery.findUnique({
-        where: { id },
-    });
+    const gallery = await prisma.gallery.findUnique({ where: { id } });
 
     if (!gallery) {
         throw new AppError(status.NOT_FOUND, "Gallery not found");
@@ -68,9 +78,7 @@ const deleteGallery = async (id: string, user: any) => {
 
     await cloudinary.uploader.destroy(gallery.publicId);
 
-    return prisma.gallery.delete({
-        where: { id },
-    });
+    return prisma.gallery.delete({ where: { id } });
 };
 
 const toggleBlockGallery = async (id: string, user: any) => {
@@ -78,9 +86,7 @@ const toggleBlockGallery = async (id: string, user: any) => {
         throw new AppError(status.FORBIDDEN, "Not allowed");
     }
 
-    const gallery = await prisma.gallery.findUnique({
-        where: { id },
-    });
+    const gallery = await prisma.gallery.findUnique({ where: { id } });
 
     if (!gallery) {
         throw new AppError(status.NOT_FOUND, "Gallery not found");
@@ -92,10 +98,24 @@ const toggleBlockGallery = async (id: string, user: any) => {
     });
 };
 
+const likeGallery = async (id: string, user: any) => {
+    const gallery = await prisma.gallery.findUnique({ where: { id } });
+
+    if (!gallery) {
+        throw new AppError(status.NOT_FOUND, "Gallery not found");
+    }
+
+    return prisma.gallery.update({
+        where: { id },
+        data: { likesCount: { increment: 1 } },
+    });
+};
+
 export const galleryService = {
     createGallery,
     getAllGallery,
     getMyGallery,
     deleteGallery,
     toggleBlockGallery,
+    likeGallery,
 };

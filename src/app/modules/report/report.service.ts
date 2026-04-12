@@ -3,23 +3,76 @@ import AppError from "../../errors/AppError";
 import status from "http-status";
 import {
     ReportStatus,
+    ReportType,
     Role,
 } from "../../../generated/prisma/enums";
 import { getPagination } from "../../utils/pagination";
+import { IPaginationQuery } from "../../utils/pagination";
+
+type AuthUser = {
+    id: string;
+    role: Role;
+};
 
 type CreateReportPayload = {
-    type: any;
+    type: ReportType;
     message?: string;
     propertyId?: string;
     blogId?: string;
     galleryId?: string;
 };
 
-const createReport = async (user: any, payload: CreateReportPayload) => {
+const createReport = async (
+    user: AuthUser,
+    payload: CreateReportPayload
+) => {
     const { propertyId, blogId, galleryId, type, message } = payload;
 
     if (!propertyId && !blogId && !galleryId) {
         throw new AppError(status.BAD_REQUEST, "No target provided");
+    }
+
+    if (blogId) {
+        const blog = await prisma.blog.findUnique({
+            where: { id: blogId },
+        });
+
+        if (!blog) {
+            throw new AppError(status.NOT_FOUND, "Blog not found");
+        }
+
+        if (blog.authorId === user.id) {
+            throw new AppError(
+                status.BAD_REQUEST,
+                "You cannot report your own blog"
+            );
+        }
+    }
+
+    if (propertyId) {
+        const property = await prisma.property.findUnique({
+            where: { id: propertyId },
+        });
+
+        if (property && property.ownerId === user.id) {
+            throw new AppError(
+                status.BAD_REQUEST,
+                "You cannot report your own property"
+            );
+        }
+    }
+
+    if (galleryId) {
+        const gallery = await prisma.gallery.findUnique({
+            where: { id: galleryId },
+        });
+
+        if (gallery && gallery.userId === user.id) {
+            throw new AppError(
+                status.BAD_REQUEST,
+                "You cannot report your own gallery"
+            );
+        }
     }
 
     return prisma.report.create({
@@ -34,7 +87,7 @@ const createReport = async (user: any, payload: CreateReportPayload) => {
     });
 };
 
-const getAllReports = async (query: any) => {
+const getAllReports = async (query: IPaginationQuery) => {
     const { skip, limit, page } = getPagination(query);
 
     const [data, total] = await Promise.all([

@@ -23,14 +23,14 @@ const createGallery = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllGallery = catchAsync(async (req: Request, res: Response) => {
-  const result = await galleryService.getAllGallery(req.query);
+    const result = await galleryService.getAllGallery(req.query);
 
-  sendResponse(res, {
-    success: true,
-    message: "Gallery retrieved",
-    data: result.data,
-    meta: result.meta,
-  });
+    sendResponse(res, {
+        success: true,
+        message: "Gallery retrieved",
+        data: result.data,
+        meta: result.meta,
+    });
 });
 
 const getMyGallery = catchAsync(async (req: Request, res: Response) => {
@@ -44,11 +44,9 @@ const getMyGallery = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteGallery = catchAsync(async (req: Request, res: Response) => {
-    const id = Array.isArray(req.params.id)
-        ? req.params.id[0]
-        : req.params.id;
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
-    const result = await galleryService.deleteGallery(id, req.user);
+    const result = await galleryService.deleteGallery(id, req.user!); // ← Fixed: used ! or check
 
     sendResponse(res, {
         success: true,
@@ -58,17 +56,27 @@ const deleteGallery = catchAsync(async (req: Request, res: Response) => {
 });
 
 const toggleBlockGallery = catchAsync(async (req: Request, res: Response) => {
-  const id = Array.isArray(req.params.id)
-    ? req.params.id[0]
-    : req.params.id;
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
-  const result = await galleryService.toggleBlockGallery(id, req.user);
+    const result = await galleryService.toggleBlockGallery(id, req.user!);
 
-  sendResponse(res, {
-    success: true,
-    message: "Gallery status updated",
-    data: result,
-  });
+    sendResponse(res, {
+        success: true,
+        message: "Gallery status updated",
+        data: result,
+    });
+});
+
+const likeGallery = catchAsync(async (req: Request, res: Response) => {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+    const result = await galleryService.likeGallery(id, req.user!);
+
+    sendResponse(res, {
+        success: true,
+        message: "Like updated successfully",
+        data: result,
+    });
 });
 
 export const galleryController = {
@@ -77,4 +85,5 @@ export const galleryController = {
     getMyGallery,
     deleteGallery,
     toggleBlockGallery,
+    likeGallery,
 };

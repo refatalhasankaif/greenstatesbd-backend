@@ -9,30 +9,36 @@ const upload = multer({ dest: "uploads/" });
 const router = Router();
 
 router.post(
-  "/",
-  checkAuth(Role.USER),
-  upload.single("image"),
-  galleryController.createGallery
+    "/",
+    checkAuth(Role.USER),
+    upload.single("image"),
+    galleryController.createGallery
 );
 
 router.get("/", galleryController.getAllGallery);
 
 router.get(
-  "/me",
-  checkAuth(Role.USER),
-  galleryController.getMyGallery
+    "/me",
+    checkAuth(Role.USER),
+    galleryController.getMyGallery
 );
 
 router.delete(
-  "/:id",
-  checkAuth(Role.USER, Role.ADMIN),
-  galleryController.deleteGallery
+    "/:id",
+    checkAuth(Role.USER, Role.ADMIN),
+    galleryController.deleteGallery
 );
 
 router.patch(
-  "/:id/block",
-  checkAuth(Role.ADMIN, Role.MODERATOR),
-  galleryController.toggleBlockGallery
+    "/:id/block",
+    checkAuth(Role.ADMIN, Role.MODERATOR),
+    galleryController.toggleBlockGallery
+);
+
+router.post(
+    "/:id/like",
+    checkAuth(Role.USER),
+    galleryController.likeGallery
 );
 
 export const galleryRoutes = router;

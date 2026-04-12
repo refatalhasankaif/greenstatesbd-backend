@@ -5,48 +5,26 @@ import status from "http-status";
 import { aiService } from "./ai.service";
 
 const chat = catchAsync(async (req: Request, res: Response) => {
-  const result = await aiService.chatAssistant(req.body.message);
+    const result = await aiService.chatAssistant(req.body.message);
 
-  sendResponse(res, {
-    success: true,
-    message: "AI response",
-    data: result,
-  }, status.OK);
+    sendResponse(res, {
+        success: true,
+        message: "AI response",
+        data: result,
+    }, status.OK);
 });
 
 const generateBlog = catchAsync(async (req: Request, res: Response) => {
-  const result = await aiService.generateBlog(req.body.topic);
+    const result = await aiService.generateBlog(req.body.topic);
 
-  sendResponse(res, {
-    success: true,
-    message: "Blog generated",
-    data: result,
-  }, status.OK);
-});
-
-const blogIdeas = catchAsync(async (_req: Request, res: Response) => {
-  const result = await aiService.suggestBlogIdeas();
-
-  sendResponse(res, {
-    success: true,
-    message: "Ideas generated",
-    data: result,
-  }, status.OK);
-});
-
-const voice = catchAsync(async (req: Request, res: Response) => {
-  const result = await aiService.voiceAssistant(req.body.message);
-
-  sendResponse(res, {
-    success: true,
-    message: "Voice response",
-    data: result,
-  }, status.OK);
+    sendResponse(res, {
+        success: true,
+        message: "Blog generated",
+        data: result,
+    }, status.OK);
 });
 
 export const aiController = {
-  chat,
-  generateBlog,
-  blogIdeas,
-  voice,
+    chat,
+    generateBlog,
 };

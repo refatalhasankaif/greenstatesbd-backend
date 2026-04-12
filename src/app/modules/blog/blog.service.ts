@@ -4,8 +4,15 @@ import status from "http-status";
 import { ICreateBlog, IUpdateBlog } from "./blog.interface";
 import { Role } from "../../../generated/prisma/enums";
 import { getPagination } from "../../utils/pagination";
+import { IPaginationQuery } from "../../utils/pagination";
+import { Prisma } from "../../../generated/prisma/client";
 
-const createBlog = async (payload: ICreateBlog, user: any) => {
+type AuthUser = {
+    id: string;
+    role: Role;
+};
+
+const createBlog = async (payload: ICreateBlog, user: AuthUser) => {
     return prisma.blog.create({
         data: {
             ...payload,
@@ -14,10 +21,12 @@ const createBlog = async (payload: ICreateBlog, user: any) => {
     });
 };
 
-const getAllBlogs = async (query: any) => {
+const getAllBlogs = async (query: IPaginationQuery) => {
     const { skip, limit, page } = getPagination(query);
 
-    const where: any = { isBlocked: false };
+    const where: Prisma.BlogWhereInput = {
+        isBlocked: false,
+    };
 
     const [data, total] = await Promise.all([
         prisma.blog.findMany({

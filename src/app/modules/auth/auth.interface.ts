@@ -15,4 +15,5 @@ export interface ISocialAuth {
   email: string;
   name: string;
   profileImage?: string;
+  idToken: string;
 }

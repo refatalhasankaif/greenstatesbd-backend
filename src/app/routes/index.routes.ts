@@ -8,7 +8,7 @@ import { blogRoutes } from "../modules/blog/blog.route";
 import { verificationRoutes } from "../modules/verification/verification.route";
 import { supportRoutes } from "../modules/support/support.route";
 import { chatRoutes } from "../modules/chat/chat.route";
-import { galleryRoutes } from "../modules/gellery/gallery.routes";
+import { galleryRoutes } from "../modules/gallery/gallery.routes";
 import { aiRoutes } from "../modules/ai/ai.route";
 import { dashboardRoutes } from "../modules/dashboard/dashboard.route";
 

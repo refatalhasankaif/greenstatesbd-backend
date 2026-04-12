@@ -7,7 +7,7 @@ import { ReportStatus } from "../../../generated/prisma/enums";
 
 const createReport = catchAsync(async (req: Request, res: Response) => {
   const result = await reportService.createReport(
-    req.user as any,
+    req.user,
     req.body
   );
 
@@ -23,7 +23,7 @@ const createReport = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllReports = catchAsync(async (req: Request, res: Response) => {
-  const result = await reportService.getAllReports(req.user as any);
+  const result = await reportService.getAllReports(req.user);
 
   sendResponse(
     res,
@@ -37,7 +37,7 @@ const getAllReports = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMyReports = catchAsync(async (req: Request, res: Response) => {
-  const result = await reportService.getMyReports(req.user as any);
+  const result = await reportService.getMyReports(req.user);
 
   sendResponse(
     res,
@@ -58,7 +58,7 @@ const updateReportStatus = catchAsync(async (req: Request, res: Response) => {
   const result = await reportService.updateReportStatus(
     id,
     statusValue,
-    req.user as any
+    req.user
   );
 
   sendResponse(
