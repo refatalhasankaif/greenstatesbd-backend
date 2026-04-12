@@ -1,0 +1,11 @@
+model GalleryLike {
+  id        String   @id @default(cuid())
+  userId    String
+  galleryId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gallery Gallery @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, galleryId])
+}

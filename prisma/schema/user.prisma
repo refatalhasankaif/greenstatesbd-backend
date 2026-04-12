@@ -31,6 +31,8 @@ model User {
 
     @@index([email])
     @@index([role])
+    
     supportSessions SupportSession[]
     verificationRequests VerificationRequest[]
+    galleryLikes GalleryLike[]
 }
