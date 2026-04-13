@@ -4,7 +4,7 @@ import status from "http-status";
 import { firebaseAdmin } from "../../lib/firebase";
 import { IRegisterUser, ILoginUser, ISocialAuth } from "./auth.interface";
 import { env } from "../../config/env";
-import { Role } from "../../../generated/prisma/enums";
+import { Role } from "../../../generated/prisma/client";
 
 const userSelect = {
     id: true,
@@ -14,9 +14,8 @@ const userSelect = {
     role: true,
     profileImage: true,
     isBlocked: true,
-    isVerified: true,
-    verificationStatus: true,
     createdAt: true,
+    updatedAt: true,
 };
 
 const checkEmail = async (email: string) => {
@@ -50,8 +49,6 @@ const registerUser = async (payload: IRegisterUser) => {
                 name: payload.name,
                 profileImage: payload.profileImage,
                 role: Role.USER,
-                isVerified: false,
-                verificationStatus: "PENDING",
             },
             select: userSelect,
         });
@@ -129,8 +126,6 @@ const socialAuth = async (payload: ISocialAuth) => {
                     name: payload.name || "User",
                     profileImage: payload.profileImage,
                     role: Role.USER,
-                    isVerified: false,
-                    verificationStatus: "PENDING",
                 },
                 select: userSelect,
             });

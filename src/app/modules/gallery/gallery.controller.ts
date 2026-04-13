@@ -19,8 +19,8 @@ const getAllGallery = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMyGallery = catchAsync(async (req: Request, res: Response) => {
-    const result = await galleryService.getMyGallery(req.user);
-    sendResponse(res, { success: true, message: "My gallery retrieved", data: result });
+    const result = await galleryService.getMyGallery(req.user, req.query);
+    sendResponse(res, { success: true, message: "My gallery retrieved", data: result.data, meta: result.meta });
 });
 
 const deleteGallery = catchAsync(async (req: Request, res: Response) => {

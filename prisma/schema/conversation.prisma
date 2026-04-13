@@ -1,8 +1,0 @@
-model Conversation {
-    id String @id @default(uuid())
-
-    createdAt DateTime @default(now())
-
-    participants ConversationParticipant[]
-    messages     Message[]
-}

@@ -94,7 +94,36 @@ const getAllReports = async (query: IPaginationQuery) => {
         prisma.report.findMany({
             skip,
             take: limit,
-            include: { user: true },
+            include: {
+                user: { select: { id: true, name: true, email: true } },
+                property: {
+                    select: {
+                        id: true,
+                        title: true,
+                        description: true,
+                        location: true,
+                        basePrice: true,
+                        status: true,
+                        images: { select: { url: true }, take: 1 }
+                    }
+                },
+                blog: {
+                    select: {
+                        id: true,
+                        title: true,
+                        content: true,
+                        author: { select: { id: true, name: true, email: true } }
+                    }
+                },
+                gallery: {
+                    select: {
+                        id: true,
+                        title: true,
+                        imageUrl: true,
+                        user: { select: { id: true, name: true, email: true } }
+                    }
+                }
+            },
             orderBy: { createdAt: "desc" },
         }),
         prisma.report.count(),
@@ -106,11 +135,29 @@ const getAllReports = async (query: IPaginationQuery) => {
     };
 };
 
-const getMyReports = async (user: any) => {
-    return prisma.report.findMany({
-        where: { userId: user.id },
-        orderBy: { createdAt: "desc" },
-    });
+const getMyReports = async (user: any, query: IPaginationQuery) => {
+    const { skip, limit, page } = getPagination(query);
+
+    const [data, total] = await Promise.all([
+        prisma.report.findMany({
+            where: { userId: user.id },
+            include: {
+                property: true,
+                blog: true,
+                gallery: true,
+                user: true,
+            },
+            skip,
+            take: limit,
+            orderBy: { createdAt: "desc" },
+        }),
+        prisma.report.count({ where: { userId: user.id } }),
+    ]);
+
+    return {
+        data,
+        meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
+    };
 };
 
 const updateReportStatus = async (
@@ -126,6 +173,7 @@ const updateReportStatus = async (
         throw new AppError(status.NOT_FOUND, "Report not found");
     }
 
+
     if (user.role === Role.ADMIN) {
         return prisma.report.update({
             where: { id },
@@ -133,27 +181,73 @@ const updateReportStatus = async (
         });
     }
 
-    if (user.role === Role.MANAGER) {
-        if (report.propertyId) {
-            return prisma.report.update({
-                where: { id },
-                data: { status: statusValue },
-            });
-        }
-        throw new AppError(status.FORBIDDEN, "Not allowed");
-    }
-
     if (user.role === Role.MODERATOR) {
-        if (report.blogId || report.galleryId) {
-            return prisma.report.update({
-                where: { id },
-                data: { status: statusValue },
-            });
-        }
-        throw new AppError(status.FORBIDDEN, "Not allowed");
+        return prisma.report.update({
+            where: { id },
+            data: { status: statusValue },
+        });
     }
 
-    throw new AppError(status.FORBIDDEN, "Permission denied");
+    throw new AppError(status.FORBIDDEN, "Not authorized to update report status");
+};
+
+const takeActionOnReport = async (
+    reportId: string,
+    action: "BLOCK" | "ALLOW",
+    user: any
+) => {
+
+    if (user.role !== Role.ADMIN && user.role !== Role.MODERATOR) {
+        throw new AppError(status.FORBIDDEN, "Not authorized to take action");
+    }
+
+    const report = await prisma.report.findUnique({
+        where: { id: reportId },
+    });
+
+    if (!report) {
+        throw new AppError(status.NOT_FOUND, "Report not found");
+    }
+
+    const shouldBlock = action === "BLOCK";
+
+    if (report.propertyId) {
+
+        if (shouldBlock) {
+            await prisma.property.update({
+                where: { id: report.propertyId },
+                data: { status: "CLOSED" },
+            });
+        }
+    } else if (report.blogId) {
+
+        await prisma.blog.update({
+            where: { id: report.blogId },
+            data: { isBlocked: shouldBlock },
+        });
+    } else if (report.galleryId) {
+
+        await prisma.gallery.update({
+            where: { id: report.galleryId },
+            data: { isBlocked: shouldBlock },
+        });
+    }
+
+
+    const updatedReport = await prisma.report.update({
+        where: { id: reportId },
+        data: {
+            status: "RESOLVED",
+        },
+        include: {
+            user: { select: { id: true, name: true, email: true } },
+            property: true,
+            blog: true,
+            gallery: true,
+        },
+    });
+
+    return updatedReport;
 };
 
 export const reportService = {
@@ -161,4 +255,5 @@ export const reportService = {
     getAllReports,
     getMyReports,
     updateReportStatus,
+    takeActionOnReport,
 };

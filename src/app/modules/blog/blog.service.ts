@@ -118,16 +118,49 @@ const toggleBlockBlog = async (
     });
 };
 
-const getMyBlogs = async (user: any) => {
-    return prisma.blog.findMany({
-        where: { authorId: user.id },
-        orderBy: { createdAt: "desc" },
-    });
+const getMyBlogs = async (user: any, query: IPaginationQuery) => {
+    const { skip, limit, page } = getPagination(query);
+
+    const [data, total] = await Promise.all([
+        prisma.blog.findMany({
+            where: { authorId: user.id },
+            include: { author: true },
+            skip,
+            take: limit,
+            orderBy: { createdAt: "desc" },
+        }),
+        prisma.blog.count({ where: { authorId: user.id } }),
+    ]);
+
+    return {
+        data,
+        meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
+    };
+};
+
+const getAllBlogsAdmin = async (query: IPaginationQuery) => {
+    const { skip, limit, page } = getPagination(query);
+
+    const [data, total] = await Promise.all([
+        prisma.blog.findMany({
+            include: { author: true },
+            skip,
+            take: limit,
+            orderBy: { createdAt: "desc" },
+        }),
+        prisma.blog.count(),
+    ]);
+
+    return {
+        meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
+        data,
+    };
 };
 
 export const blogService = {
     createBlog,
     getAllBlogs,
+    getAllBlogsAdmin,
     getBlogById,
     updateBlog,
     deleteBlog,

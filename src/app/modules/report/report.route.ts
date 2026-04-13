@@ -22,15 +22,21 @@ router.get(
 
 router.get(
   "/",
-  checkAuth(Role.ADMIN, Role.MANAGER, Role.MODERATOR),
+  checkAuth(Role.ADMIN, Role.MODERATOR),
   reportController.getAllReports
 );
 
 router.patch(
   "/:id/status",
-  checkAuth(Role.ADMIN, Role.MANAGER, Role.MODERATOR),
+  checkAuth(Role.ADMIN, Role.MODERATOR),
   validateRequest(reportValidation.updateReportStatusValidation),
   reportController.updateReportStatus
+);
+
+router.post(
+  "/:id/action",
+  checkAuth(Role.ADMIN, Role.MODERATOR),
+  reportController.takeActionOnReport
 );
 
 export const reportRoutes = router;

@@ -14,7 +14,6 @@ router.get(
     Role.ADMIN,
     Role.MANAGER,
     Role.MODERATOR,
-    Role.SUPPORT_AGENT
   ),
   userController.getMyProfile
 );
@@ -25,8 +24,7 @@ router.patch(
     Role.USER,
     Role.ADMIN,
     Role.MANAGER,
-    Role.MODERATOR,
-    Role.SUPPORT_AGENT
+    Role.MODERATOR
   ),
   validateRequest(userValidation.updateProfileValidation),
   userController.updateProfile

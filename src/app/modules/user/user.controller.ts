@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
+import AppError from "../../errors/AppError";
 import status from "http-status";
 import { userService } from "./user.service";
 
@@ -61,6 +62,14 @@ const updateUserRole = catchAsync(async (req: Request, res: Response) => {
 
 const toggleBlockUser = catchAsync(async (req: Request, res: Response) => {
     const id = req.params.id as string;
+    const adminId = req.user?.id as string;
+
+    if (id === adminId) {
+        throw new AppError(
+            status.FORBIDDEN,
+            "You cannot block your own account"
+        );
+    }
 
     const result = await userService.toggleBlockUser(
         id,

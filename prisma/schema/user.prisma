@@ -9,9 +9,6 @@ model User {
 
     isBlocked Boolean @default(false)
 
-    isVerified Boolean @default(false)
-    verificationStatus VerificationStatus @default(PENDING)
-
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -23,16 +20,8 @@ model User {
     galleryPosts Gallery[]
     blogs        Blog[]
 
-    supportRequests SupportSession[] @relation("UserSupport")
-    supportHandled  SupportSession[] @relation("AgentSupport")
-
-    conversations ConversationParticipant[]
-    messages      Message[]
+    galleryLikes GalleryLike[]
 
     @@index([email])
     @@index([role])
-    
-    supportSessions SupportSession[]
-    verificationRequests VerificationRequest[]
-    galleryLikes GalleryLike[]
 }

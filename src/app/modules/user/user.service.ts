@@ -12,9 +12,8 @@ const userSelect = {
     role: true,
     profileImage: true,
     isBlocked: true,
-    isVerified: true,
-    verificationStatus: true,
     createdAt: true,
+    updatedAt: true,
 };
 
 const getMyProfile = async (user: any) => {

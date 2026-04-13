@@ -23,7 +23,6 @@ router.get(
     galleryController.getMyGallery
 );
 
-// ⚠️ Must be before /:id routes
 router.get(
     "/liked",
     checkAuth(Role.USER),

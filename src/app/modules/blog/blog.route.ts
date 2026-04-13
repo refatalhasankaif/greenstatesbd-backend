@@ -8,39 +8,45 @@ import { Role } from "../../../generated/prisma/enums";
 const router = Router();
 
 router.post(
-  "/",
-  checkAuth(),
-  validateRequest(blogValidation.createBlogValidation),
-  blogController.createBlog
+    "/",
+    checkAuth(),
+    validateRequest(blogValidation.createBlogValidation),
+    blogController.createBlog
 );
 
 router.get(
-  "/me",
-  checkAuth(),
-  blogController.getMyBlogs
+    "/me",
+    checkAuth(),
+    blogController.getMyBlogs
+);
+
+router.get(
+    "/admin/all",
+    checkAuth(Role.ADMIN, Role.MODERATOR),
+    blogController.getAllBlogsAdmin
 );
 
 router.get("/", blogController.getAllBlogs);
 router.get("/:id", blogController.getBlogById);
 
 router.patch(
-  "/:id",
-  checkAuth(),
-  validateRequest(blogValidation.updateBlogValidation),
-  blogController.updateBlog
+    "/:id",
+    checkAuth(),
+    validateRequest(blogValidation.updateBlogValidation),
+    blogController.updateBlog
 );
 
 router.delete(
-  "/:id",
-  checkAuth(),
-  blogController.deleteBlog
+    "/:id",
+    checkAuth(),
+    blogController.deleteBlog
 );
 
 router.patch(
-  "/:id/block",
-  checkAuth(Role.ADMIN, Role.MODERATOR),
-  validateRequest(blogValidation.toggleBlockValidation),
-  blogController.toggleBlockBlog
+    "/:id/block",
+    checkAuth(Role.ADMIN, Role.MODERATOR),
+    validateRequest(blogValidation.toggleBlockValidation),
+    blogController.toggleBlockBlog
 );
 
 export const blogRoutes = router;

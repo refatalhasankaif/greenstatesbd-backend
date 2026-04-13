@@ -3,7 +3,7 @@ import AppError from "../../errors/AppError";
 import status from "http-status";
 import { Role } from "../../../generated/prisma/enums";
 import cloudinary from "../../config/cloudinary.config";
-import { getPagination } from "../../utils/pagination";
+import { getPagination, IPaginationQuery } from "../../utils/pagination";
 
 const createGallery = async (file: any, payload: any, user: any) => {
     if (!file) throw new AppError(status.BAD_REQUEST, "Image is required");
@@ -47,12 +47,24 @@ const getAllGallery = async (query: any) => {
     };
 };
 
-const getMyGallery = async (user: any) => {
-    return prisma.gallery.findMany({
-        where: { userId: user.id },
-        include: { user: true },
-        orderBy: { createdAt: "desc" },
-    });
+const getMyGallery = async (user: any, query: IPaginationQuery) => {
+    const { skip, limit, page } = getPagination(query);
+
+    const [data, total] = await Promise.all([
+        prisma.gallery.findMany({
+            where: { userId: user.id },
+            include: { user: true },
+            skip,
+            take: limit,
+            orderBy: { createdAt: "desc" },
+        }),
+        prisma.gallery.count({ where: { userId: user.id } }),
+    ]);
+
+    return {
+        data,
+        meta: { page, limit, total, totalPage: Math.ceil(total / limit) },
+    };
 };
 
 const deleteGallery = async (id: string, user: any) => {

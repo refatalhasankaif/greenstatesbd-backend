@@ -23,28 +23,30 @@ const createReport = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllReports = catchAsync(async (req: Request, res: Response) => {
-  const result = await reportService.getAllReports(req.user);
+  const result = await reportService.getAllReports(req.query);
 
   sendResponse(
     res,
     {
       success: true,
       message: "Reports retrieved successfully",
-      data: result,
+      data: result.data,
+      meta: result.meta,
     },
     status.OK
   );
 });
 
 const getMyReports = catchAsync(async (req: Request, res: Response) => {
-  const result = await reportService.getMyReports(req.user);
+  const result = await reportService.getMyReports(req.user, req.query);
 
   sendResponse(
     res,
     {
       success: true,
       message: "My reports retrieved",
-      data: result,
+      data: result.data,
+      meta: result.meta,
     },
     status.OK
   );
@@ -72,9 +74,31 @@ const updateReportStatus = catchAsync(async (req: Request, res: Response) => {
   );
 });
 
+const takeActionOnReport = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const { action } = req.body as { action: "BLOCK" | "ALLOW" };
+
+  const result = await reportService.takeActionOnReport(
+    id,
+    action,
+    req.user
+  );
+
+  sendResponse(
+    res,
+    {
+      success: true,
+      message: `Content ${action === "BLOCK" ? "blocked" : "allowed"} successfully`,
+      data: result,
+    },
+    status.OK
+  );
+});
+
 export const reportController = {
   createReport,
   getAllReports,
   getMyReports,
   updateReportStatus,
+  takeActionOnReport,
 };

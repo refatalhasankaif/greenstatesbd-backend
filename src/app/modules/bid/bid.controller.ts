@@ -30,18 +30,54 @@ const getMyBids = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getBidsByProperty = catchAsync(async (req: Request, res: Response) => {
-  const propertyId = Array.isArray(req.params.id)
-    ? req.params.id[0]
-    : req.params.id;
+    const propertyId = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id;
 
-  const result = await bidService.getBidsByProperty(propertyId, req.query);
+    const result = await bidService.getBidsByProperty(propertyId, req.query);
 
-  sendResponse(res, {
-    success: true,
-    message: "Bids retrieved",
-    data: result.data,
-    meta: result.meta,
-  });
+    sendResponse(res, {
+        success: true,
+        message: "Bids retrieved",
+        data: result.data,
+        meta: result.meta,
+    });
+});
+
+const getAllBids = catchAsync(async (req: Request, res: Response) => {
+    const result = await bidService.getAllBids(req.query);
+
+    sendResponse(res, {
+        success: true,
+        message: "All bids retrieved",
+        data: result.data,
+        meta: result.meta,
+    });
+});
+
+const updateBidStatus = catchAsync(async (req: Request, res: Response) => {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const { status } = req.body;
+
+    const result = await bidService.updateBidStatus(id, status);
+
+    sendResponse(res, {
+        success: true,
+        message: "Bid status updated",
+        data: result,
+    });
+});
+
+const acceptBid = catchAsync(async (req: Request, res: Response) => {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+    const result = await bidService.acceptBid(id, req.user.id);
+
+    sendResponse(res, {
+        success: true,
+        message: "Bid accepted successfully",
+        data: result,
+    });
 });
 
 const closeBidding = catchAsync(async (req: Request, res: Response) => {
@@ -60,9 +96,25 @@ const closeBidding = catchAsync(async (req: Request, res: Response) => {
     );
 });
 
+const getBidById = catchAsync(async (req: Request, res: Response) => {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+
+    const result = await bidService.getBidById(id);
+
+    sendResponse(res, {
+        success: true,
+        message: "Bid retrieved",
+        data: result,
+    });
+});
+
 export const bidController = {
     createBid,
     getMyBids,
+    getBidById,
     getBidsByProperty,
+    getAllBids,
+    updateBidStatus,
+    acceptBid,
     closeBidding,
 };

@@ -5,97 +5,111 @@ import status from "http-status";
 import { blogService } from "./blog.service";
 
 const createBlog = catchAsync(async (req: Request, res: Response) => {
-  const result = await blogService.createBlog(req.body, req.user);
+    const result = await blogService.createBlog(req.body, req.user);
 
-  sendResponse(res, {
-    success: true,
-    message: "Blog created successfully",
-    data: result,
-  }, status.CREATED);
+    sendResponse(res, {
+        success: true,
+        message: "Blog created successfully",
+        data: result,
+    }, status.CREATED);
 });
 
 const getAllBlogs = catchAsync(async (req: Request, res: Response) => {
-  const result = await blogService.getAllBlogs(req.query);
+    const result = await blogService.getAllBlogs(req.query);
 
-  sendResponse(res, {
-    success: true,
-    message: "Blogs retrieved",
-    data: result,
-  });
+    sendResponse(res, {
+        success: true,
+        message: "Blogs retrieved",
+        data: result.data,
+        meta: result.meta,
+    });
+});
+
+const getAllBlogsAdmin = catchAsync(async (req: Request, res: Response) => {
+    const result = await blogService.getAllBlogsAdmin(req.query);
+
+    sendResponse(res, {
+        success: true,
+        message: "All blogs retrieved",
+        data: result.data,
+        meta: result.meta,
+    });
 });
 
 const getBlogById = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id as string;
+    const id = req.params.id as string;
 
-  const result = await blogService.getBlogById(id);
+    const result = await blogService.getBlogById(id);
 
-  sendResponse(res, {
-    success: true,
-    message: "Blog retrieved",
-    data: result,
-  });
+    sendResponse(res, {
+        success: true,
+        message: "Blog retrieved",
+        data: result,
+    });
 });
 
 const updateBlog = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id as string;
+    const id = req.params.id as string;
 
-  const result = await blogService.updateBlog(
-    id,
-    req.body,
-    req.user
-  );
+    const result = await blogService.updateBlog(
+        id,
+        req.body,
+        req.user
+    );
 
-  sendResponse(res, {
-    success: true,
-    message: "Blog updated",
-    data: result,
-  });
+    sendResponse(res, {
+        success: true,
+        message: "Blog updated",
+        data: result,
+    });
 });
 
 const deleteBlog = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id as string;
+    const id = req.params.id as string;
 
-  const result = await blogService.deleteBlog(id, req.user);
+    const result = await blogService.deleteBlog(id, req.user);
 
-  sendResponse(res, {
-    success: true,
-    message: "Blog deleted",
-    data: result,
-  });
+    sendResponse(res, {
+        success: true,
+        message: "Blog deleted",
+        data: result,
+    });
 });
 
 const toggleBlockBlog = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id as string;
+    const id = req.params.id as string;
 
-  const result = await blogService.toggleBlockBlog(
-    id,
-    req.body.isBlocked,
-    req.user
-  );
+    const result = await blogService.toggleBlockBlog(
+        id,
+        req.body.isBlocked,
+        req.user
+    );
 
-  sendResponse(res, {
-    success: true,
-    message: "Blog status updated",
-    data: result,
-  });
+    sendResponse(res, {
+        success: true,
+        message: "Blog status updated",
+        data: result,
+    });
 });
 
 const getMyBlogs = catchAsync(async (req: Request, res: Response) => {
-  const result = await blogService.getMyBlogs(req.user);
+    const result = await blogService.getMyBlogs(req.user, req.query);
 
-  sendResponse(res, {
-    success: true,
-    message: "My blogs retrieved",
-    data: result,
-  });
+    sendResponse(res, {
+        success: true,
+        message: "My blogs retrieved",
+        data: result.data,
+        meta: result.meta,
+    });
 });
 
 export const blogController = {
-  createBlog,
-  getAllBlogs,
-  getBlogById,
-  updateBlog,
-  deleteBlog,
-  toggleBlockBlog,
-  getMyBlogs,
+    createBlog,
+    getAllBlogs,
+    getAllBlogsAdmin,
+    getBlogById,
+    updateBlog,
+    deleteBlog,
+    toggleBlockBlog,
+    getMyBlogs,
 };

@@ -3,7 +3,6 @@ enum Role {
     MANAGER
     ADMIN
     MODERATOR
-    SUPPORT_AGENT
 }
 
 enum PropertyType {
@@ -25,19 +24,15 @@ enum Division {
 }
 
 enum PropertyStatus {
-    DRAFT
-    UPCOMING
-    ONGOING
+    ACTIVE
     CLOSED
-    ADVANCE_PAID
-    FULLY_PAID
+    SOLD
     HANDED_OVER
 }
 
 enum BidStatus {
     ACTIVE
-    WON
-    LOST
+    PROPERTY_SOLD
     CANCELLED
 }
 
@@ -53,20 +48,5 @@ enum ReportStatus {
     PENDING
     REVIEWED
     RESOLVED
-    REJECTED
-}
-
-enum VerificationStatus {
-    NOT_VERIFIED
-    PENDING
-    APPROVED
-    REJECTED
-}
-
-enum SupportStatus {
-    REQUESTED
-    ACCEPTED
-    ONGOING
-    ENDED
     REJECTED
 }

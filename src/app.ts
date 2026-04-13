@@ -14,27 +14,46 @@ const app: Application = express();
 
 app.use(helmet());
 
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        env.FRONTEND_URL,
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+      ];
+      
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    preflightContinue: false,
+    optionsSuccessStatus: 200,
+  })
+);
+
 const limiter = rateLimit({
   windowMs: 25 * 60 * 1000,
   max: 200,
   message: "Too many requests, please try again later",
+  skip: (req) => req.method === "OPTIONS", // Skip rate limiting for OPTIONS requests
 });
 app.use(limiter);
-
-app.use(
-  cors({
-    origin: [env.FRONTEND_URL],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
 
 app.use(morgan(env.NODE_ENV === "development" ? "dev" : "combined"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+
+app.use("/uploads", express.static("uploads"));
 
 app.use("/api/v1", IndexRoutes);
 

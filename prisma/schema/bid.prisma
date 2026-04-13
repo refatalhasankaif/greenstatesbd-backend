@@ -3,6 +3,7 @@ model Bid {
 
     amount Float
     status BidStatus @default(ACTIVE)
+    isAccepted Boolean @default(false)
 
     createdAt DateTime @default(now())
 

@@ -5,15 +5,12 @@ export const createPropertyValidationSchema = z.object({
   body: z.object({
     title: z.string().min(3),
     description: z.string().min(10),
-    basePrice: z.number(),
+    basePrice: z.number().positive(),
 
     location: z.nativeEnum(Division),
     address: z.string().optional(),
 
     type: z.nativeEnum(PropertyType),
-
-    biddingStart: z.string().optional(),
-    biddingEnd: z.string().optional(),
   }),
 });
 
@@ -21,7 +18,7 @@ export const updatePropertyValidationSchema = z.object({
   body: z.object({
     title: z.string().optional(),
     description: z.string().optional(),
-    basePrice: z.number().optional(),
+    basePrice: z.number().positive().optional(),
     location: z.nativeEnum(Division).optional(),
     address: z.string().optional(),
     type: z.nativeEnum(PropertyType).optional(),
@@ -34,8 +31,15 @@ export const updateStatusValidationSchema = z.object({
   }),
 });
 
+export const handoverPropertyValidationSchema = z.object({
+  body: z.object({
+    newOwnerId: z.string().min(1, "New owner ID is required"),
+  }),
+});
+
 export const propertyValidation = {
   createPropertyValidationSchema,
   updatePropertyValidationSchema,
   updateStatusValidationSchema,
+  handoverPropertyValidationSchema,
 };
