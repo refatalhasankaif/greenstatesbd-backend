@@ -2,7 +2,6 @@ import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
 
 import { globalErrorHandler } from "./app/errors/globalErrorHandler";
 import { notFound } from "./app/errors/notFound";
@@ -37,14 +36,6 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-
-const limiter = rateLimit({
-  windowMs: 25 * 60 * 1000,
-  max: 200,
-  message: "Too many requests, please try again later",
-  skip: (req) => req.method === "OPTIONS", // Skip rate limiting for OPTIONS requests
-});
-app.use(limiter);
 
 app.use(morgan(env.NODE_ENV === "development" ? "dev" : "combined"));
 
